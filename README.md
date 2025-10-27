@@ -16,9 +16,10 @@ This project uses npm for package management and Bun as the runtime/build tool f
 1. Clone repository in desired location 
 2. Open a terminal/command prompt in the project directory
 3. Install dependencies:
-   ```bash
-   npm install
-   ```
+
+```bash
+npm install
+```
 
 ## Running the Application
 
@@ -53,7 +54,7 @@ The preview will be available at `http://localhost:4173`
 ```
 web1Project1/
 ├── src/
-│   ├── Views/         # Main view components
+│   ├── views/         # Main view components
 │   ├── components/    # Reusable Vue components
 │   ├── router/        # Vue Router configuration
 │   ├── utils/         # Utility functions and helpers
@@ -69,12 +70,12 @@ web1Project1/
 
 ## Technology Stack
 
-- **Vue 3** - Progressive JavaScript framework
-- **TypeScript** - Typed superset of JavaScript
-- **Vite** - Next-generation frontend build tool
-- **Tailwind CSS v4** - Utility-first CSS framework
-- **Bun** - Fast JavaScript runtime and package manager
-- **Open Trivia Database API** - Trivia questions data source
+- **Vue 3**
+- **TypeScript** 
+- **Vite** 
+- **Tailwind CSS v4**
+- **Bun**
+- **Open Trivia Database API**
 
 ## Features
 
@@ -116,13 +117,3 @@ This project uses **npm for installing packages** and **Bun as the runtime** for
 ## API Information
 
 This project uses the [Open Trivia Database API](https://opentdb.com/) to fetch trivia questions. No API key is required.
-
-## Browser Compatibility
-
-This application works best in modern browsers (Chrome, Firefox, Safari, Edge) with JavaScript enabled.
-
----
-
-**Student**: William
-**Course**: Web Programming 1
-**Institution**: Alfred State College

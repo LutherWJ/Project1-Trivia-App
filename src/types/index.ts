@@ -43,6 +43,12 @@ export interface Preferences {
     difficulty: string
 }
 
+export interface PreferenceStrings {
+    quantity: string
+    category: string
+    difficulty: string
+}
+
 export interface AnswerChoice {
     answer: string
     isCorrect: boolean

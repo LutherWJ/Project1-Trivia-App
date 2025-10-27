@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Dropdown from "../components/Dropdown.vue";
 import Scoreboard from "../components/Scoreboard.vue";
-import type {Preferences} from "../types";
+import type {Preferences, PreferenceStrings} from "../types";
 import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRouter} from "vue-router";
 import {fetchQuestions} from "../utils/api.ts";
@@ -14,11 +14,11 @@ const quantityDropdown = ref();
 const categoryDropdown = ref();
 const difficultyDropdown = ref();
 const isLoading = ref(false);
-let defaultPreferences: any = {
-  quantity: QUANTITIES[4],  // "10"
-  category: CATEGORY_NAMES[0],  // "Random"
-  difficulty: DIFFICULTIES[0],  // "Any"
-}
+const defaultPreferences = ref<PreferenceStrings>({
+  quantity: QUANTITIES[4] ?? "10",  // "10"
+  category: CATEGORY_NAMES[0] ?? "Random",  // "Random"
+  difficulty: DIFFICULTIES[0] ?? "Any",  // "Any"
+})
 
 // Get preferences out of dropdowns and convert them into desired formats
 const checkPreferences = (): Preferences => {
@@ -64,20 +64,25 @@ const startEndless = async () => {
   })
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Check for saved preferences in sessionStorage
   const p = getPreferences();
   if (p === null) return;
 
-  defaultPreferences = {
-    quantity: p.quantity.toString(),
-    category: CATEGORY_NAMES[0],
+  defaultPreferences.value = {
+    quantity: p.quantity,
+    category: p.category,
     difficulty: p.difficulty
   };
-})
+});
 
 onBeforeRouteLeave(() => {
-  savePreferences(checkPreferences());
+  const p: PreferenceStrings = {
+    quantity: quantityDropdown.value.selectedValue,
+    category: categoryDropdown.value.selectedValue,
+    difficulty: difficultyDropdown.value.selectedValue
+  };
+  savePreferences(p);
   return true;
 });
 </script>
@@ -104,7 +109,7 @@ onBeforeRouteLeave(() => {
 
           <div>
             <label class="block text-gray-300 mb-2 text-sm font-medium">Question Quantity</label>
-            <dropdown :options="[...QUANTITIES]" :default-value="defaultPreferences.quantity.toString()" ref="quantityDropdown"/>
+            <dropdown :options="[...QUANTITIES]" :default-value="defaultPreferences.quantity" ref="quantityDropdown"/>
           </div>
         </div>
 

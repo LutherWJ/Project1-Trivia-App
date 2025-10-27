@@ -1,4 +1,4 @@
-import type { ScoreHistoryEntry, Preferences } from '../types';
+import type {ScoreHistoryEntry, PreferenceStrings} from '../types';
 import {Mode} from "../types";
 
 const SCORE_HISTORY_KEY = 'score_history';
@@ -31,11 +31,11 @@ export const addScoreToHistory = (mode: Mode, score: number, totalQuestions: num
     }
 }
 
-export const savePreferences = (preferences: Preferences): void => {
+export const savePreferences = (preferences: PreferenceStrings): void => {
     sessionStorage.setItem(PREFERENCES_KEY, JSON.stringify(preferences));
 }
 
-export const getPreferences = (): Preferences | null => {
+export const getPreferences = (): PreferenceStrings | null => {
     const stored = sessionStorage.getItem(PREFERENCES_KEY);
     return stored ? JSON.parse(stored) : null;
 }

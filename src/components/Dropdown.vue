@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = withDefaults(defineProps<{
   options: string[] // Options in the dropdown will be decided by the contents of this array
@@ -9,6 +9,11 @@ const props = withDefaults(defineProps<{
 });
 
 const selectedValue = ref<string>(props.defaultValue)
+
+// Watch for changes to defaultValue prop and update selectedValue
+watch(() => props.defaultValue, (newValue) => {
+  selectedValue.value = newValue;
+});
 
 // Expose selectedValue so parent can access it directly
 defineExpose({

@@ -13,7 +13,7 @@ This project uses npm for package management and Bun as the runtime/build tool f
 
 ## Setup Instructions
 
-1. Place project directory in desired location
+1. Clone repository in desired location 
 2. Open a terminal/command prompt in the project directory
 3. Install dependencies:
    ```bash

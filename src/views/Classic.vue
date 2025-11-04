@@ -16,16 +16,12 @@ const currentChoices = ref<AnswerChoice[]>([]);
 const questionCount = questions.results.length;
 const score = ref(0);
 const answeredCurrentQuestion = ref(false);
-const showAnswer = ref<boolean>(false);
 
 const handleAnswerClick = (isCorrect: boolean) => {
   if (answeredCurrentQuestion.value) return;
   answeredCurrentQuestion.value = true;
   if (isCorrect) {
     score.value += 1;
-  } else {
-    showAnswer.value = true;
-    setTimeout(() => showAnswer.value = false, 1500);
   }
   // Wait 1.5 seconds before moving to next question so user can see the result
   setTimeout(() => {
@@ -91,11 +87,8 @@ onMounted(async () => {
       </div>
       <p class="mb-4">{{decodeHtml(questions.results[currentQuestion]?.question || '')}}</p>
       <div v-for="choice in currentChoices" :key="choice.answer" :value="choice" class="mb-2">
-        <answer-box :choice="choice" @answer-clicked="handleAnswerClick" :disabled="answeredCurrentQuestion"/>
+        <answer-box :choice="choice" @answer-clicked="handleAnswerClick" :disabled="answeredCurrentQuestion" :show-correct-answer="answeredCurrentQuestion"/>
       </div>
-    </div>
-    <div v-if="showAnswer" class="max-w-md mx-auto bg-zinc-800 rounded-lg shadow-4xl p-4 md:p-6 my-4">
-      <p  class="text-center text-sm md:text-xl p-2 text-red-500 break-words">Correct Answer: {{questions.results[currentQuestion]?.correct_answer || ''}}</p>
     </div>
   </div>
 </template>

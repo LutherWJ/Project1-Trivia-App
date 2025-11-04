@@ -22,17 +22,13 @@ const currentChoices = ref<AnswerChoice[]>([]);
 const score = ref<number>(0);
 const answeredCurrentQuestion = ref<boolean>(false);
 let questionBuffer: TriviaAPIResponse | null = null;
-let progress: number = 0; // This will track how many questions the user has answered from the most recent request
-const showAnswer = ref<boolean>(false);
+const requestTracker = ref<number>(0); // This will track how many questions the user has answered from the most recent request
 
 const handleAnswerClick = (isCorrect: boolean) => {
   if (answeredCurrentQuestion.value) return;
   answeredCurrentQuestion.value = true;
   if (isCorrect) {
     score.value += 1;
-  } else {
-    showAnswer.value = true;
-    setTimeout(() => showAnswer.value = false, 1500);
   }
   // Wait 1.5 seconds before moving to next question so user can see the result
   setTimeout(() => {
@@ -44,7 +40,7 @@ const handleAnswerClick = (isCorrect: boolean) => {
 const nextQuestion = async () => {
   if (answeredCurrentQuestion.value) return; // Quick check for repeat clicks
   // Fetch new questions 1 before new batch is needed
-  if (progress === preferences.quantity - 2) {
+  if (requestTracker.value === preferences.quantity - 2) {
     const buffer = await fetchQuestions(preferences);
     if (!buffer.ok) {
       showError(buffer.error);
@@ -53,9 +49,9 @@ const nextQuestion = async () => {
       return;
     }
     questionBuffer = buffer.value;
-  } else if (progress == preferences.quantity - 1) {
+  } else if (requestTracker.value == preferences.quantity - 1) {
     // Move buffer to main question array once they're needed
-    progress = 0;
+    requestTracker.value = 0;
     if (!questionBuffer) {
       showError("Failed to load questions");
       await router.push('/');
@@ -65,11 +61,11 @@ const nextQuestion = async () => {
   }
 
   currentQuestion.value++;
-  progress++;
-  const current = questions.value[progress];
+  requestTracker.value++;
+  const current = questions.value[requestTracker.value];
   if (!current) {
     showError("Failed to load next question");
-    console.error("Question not found at index:", progress);
+    console.error("Question not found at index:", requestTracker.value);
     await router.push({name: 'index'});
     return;
   }
@@ -139,13 +135,10 @@ onMounted(async () => {
         <p>Question: {{ currentQuestion }}/Infinite</p>
         <p>Score: {{ score }}</p>
       </div>
-      <p class="mb-4" v-if="questions[progress]">{{ decodeHtml(questions[progress]?.question || '') }}</p>
+      <p class="mb-4" v-if="questions[requestTracker]">{{ decodeHtml(questions[requestTracker]?.question || '') }}</p>
       <div v-for="choice in currentChoices" :key="choice.answer" :value="choice" class="mb-2">
-        <answer-box :choice="choice" @answer-clicked="handleAnswerClick"/>
+        <answer-box :choice="choice" @answer-clicked="handleAnswerClick" :disabled="answeredCurrentQuestion" :show-correct-answer="answeredCurrentQuestion"/>
       </div>
-    </div>
-    <div v-if="showAnswer" class="max-w-md mx-auto bg-zinc-800 rounded-lg shadow-4xl p-4 md:p-6 my-4">
-      <p class="text-center text-sm md:text-xl p-2 text-red-500 break-words">Correct Answer: {{questions[currentQuestion]?.correct_answer || ''}}</p>
     </div>
   </div>
 </template>

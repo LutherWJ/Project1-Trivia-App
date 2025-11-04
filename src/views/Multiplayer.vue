@@ -188,7 +188,7 @@ onUnmounted(() => {
     <!-- Game box -->
     <div v-if="isStarted" class="max-w-md mx-auto bg-zinc-800 rounded-lg shadow-lg p-6">
       <div class="flex justify-between mb-5">
-        <p>Question {{ currentQuestion }}/{{ questionCount }}</p>
+        <p>Question {{ currentQuestion + 1 }}/{{ questionCount }}</p>
         <p>Score: {{ score }}/{{ questionCount }}</p>
         <p>Time Remaining: {{timeLeft}}</p>
       </div>

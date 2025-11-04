@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import { useSocket } from "../composables/useSocket.ts";
+import { useSocket, disconnectSocket } from "../composables/useSocket.ts";
 import { useRouter } from "vue-router";
 import { showError } from "../utils/errorHandler.ts";
 
@@ -76,6 +76,9 @@ onUnmounted(() => {
   if (animationInterval !== null) {
     clearInterval(animationInterval);
   }
+
+  // Disconnect socket when leaving matchmaking to prevent event handler accumulation
+  disconnectSocket();
 });
 
 const acceptMatch = () => {

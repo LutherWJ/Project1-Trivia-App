@@ -6,19 +6,18 @@ import {onMounted, ref} from "vue";
 import {onBeforeRouteLeave, useRouter} from "vue-router";
 import {fetchQuestions} from "../utils/api.ts";
 import {CATEGORIES, CATEGORY_NAMES, DIFFICULTIES, QUANTITIES} from "../utils/constants.ts";
-import { savePreferences, getPreferences } from "../utils/caching.ts";
+import {savePreferences, getPreferences} from "../utils/caching.ts";
 
 const router = useRouter();
-
 const quantityDropdown = ref();
 const categoryDropdown = ref();
 const difficultyDropdown = ref();
 const isLoading = ref(false);
 const defaultPreferences = ref<PreferenceStrings>({
-  quantity: QUANTITIES[4] ?? "10",  // "10"
-  category: CATEGORY_NAMES[0] ?? "Random",  // "Random"
-  difficulty: DIFFICULTIES[0] ?? "Any",  // "Any"
-})
+  quantity: QUANTITIES[4] ?? "10", // make typescript compiler happy.
+  category: CATEGORY_NAMES[0] ?? "Random",
+  difficulty: DIFFICULTIES[0] ?? "Any",
+});
 
 // Get preferences out of dropdowns and convert them into desired formats
 const checkPreferences = (): Preferences => {
@@ -61,7 +60,12 @@ const startEndless = async () => {
   isLoading.value = true;
   await router.push({
     name: 'endless',
-  })
+  });
+}
+
+const startMultiplayer = async () => {
+  isLoading.value = true;
+  await router.push('/matchmaking');
 }
 
 onMounted(async () => {
@@ -125,9 +129,15 @@ onBeforeRouteLeave(() => {
         >
           Play Endless
         </button>
+        <button
+            @click="startMultiplayer"
+            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors cursor-pointer active:bg-purple-800 text-lg"
+        >
+          Play Multiplayer
+        </button>
       </div>
 
       <scoreboard/>
-    </div> 
+    </div>
   </div>
-</template>
+</template>>

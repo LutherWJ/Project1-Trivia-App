@@ -4,6 +4,8 @@ import type { AnswerChoice } from '../types'
 
 interface Props {
   choice: AnswerChoice
+  disabled?: boolean
+  showCorrectAnswer?: boolean
 }
 
 const props = defineProps<Props>()
@@ -14,7 +16,7 @@ const emit = defineEmits<{
 const clicked = ref(false)
 
 const handleClick = () => {
-  if (!clicked.value) {
+  if (!clicked.value && !props.disabled) {
     clicked.value = true
     emit('answerClicked', props.choice.isCorrect)
   }
@@ -25,12 +27,13 @@ const handleClick = () => {
   <button
     @click="handleClick"
     :class="{
-      'bg-green-500 hover:bg-green-500': clicked && choice.isCorrect,
+      'bg-green-500 hover:bg-green-500': (clicked && choice.isCorrect) || (showCorrectAnswer && choice.isCorrect),
       'bg-red-500 hover:bg-red-500': clicked && !choice.isCorrect,
-      'bg-blue-500 hover:bg-blue-600': !clicked
+      'bg-gray-600 hover:bg-gray-600': showCorrectAnswer && !choice.isCorrect && !clicked,
+      'bg-blue-500 hover:bg-blue-600': !clicked && !showCorrectAnswer
     }"
     class="w-full p-4 rounded-lg text-white font-semibold transition-colors duration-200 cursor-pointer disabled:cursor-pointer"
-    :disabled="clicked"
+    :disabled="disabled || clicked"
   >
     {{ choice.answer }}
   </button>

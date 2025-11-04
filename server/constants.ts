@@ -1,0 +1,1 @@
+export const MULTIPLAYER_QUESTION_COUNT = 10;

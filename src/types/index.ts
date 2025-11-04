@@ -69,3 +69,26 @@ export interface ScoreHistoryEntry {
     timestamp: number
     percentage: number
 }
+
+export interface Player {
+    id: string;
+    name: string;
+    score: number;
+    ready: boolean;
+}
+
+export interface GameRoom {
+    id: string;
+    player1: Player;
+    player2: Player;
+    currentQuestionIndex: number;
+    questions: Question[];
+    startTime: number | null;
+}
+
+export interface PlayerResult {
+    roomID: string;
+    playerID: string;
+    isCorrect: boolean;
+    timeAnswered: number;
+}

@@ -31,3 +31,5 @@ export const CATEGORY_NAMES = Array.from(CATEGORIES.keys());
 export const DIFFICULTIES = ["Any", "Easy", "Medium", "Hard"] as const;
 
 export const QUANTITIES = ["1", "3", "5", "7", "10", "15", "20"] as const;
+
+export const QUESTION_TIME_LIMIT = 10;

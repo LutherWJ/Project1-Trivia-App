@@ -2,7 +2,6 @@
 import {onMounted, ref, nextTick, onUnmounted} from 'vue'
 import {useRouter} from 'vue-router'
 import {type AnswerChoice, type Question} from '../types'
-import {addScoreToHistory} from '../utils/caching.ts'
 import AnswerBox from "../components/AnswerBox.vue";
 import {showError} from "../utils/errorHandler";
 import {shuffleAnswers, decodeAnswerChoices, decodeHtml} from "../utils/quizHelpers";
@@ -10,7 +9,6 @@ import {useSocket} from "../composables/useSocket.ts";
 import {type PlayerResult} from "../types";
 import {QUESTION_TIME_LIMIT} from "../utils/constants.ts";
 import {useTimer} from "../composables/useTimer.ts";
-import type {GameRoom} from "../../server/types/multiplayerTypes.ts";
 
 const router = useRouter()
 
@@ -35,6 +33,7 @@ const lastResult = ref<'win' | 'loss' | 'tie' | null>(null); // Track result of 
 const opponentName = ref<string>('');
 
 
+// Timer that enforces the 10 second time limit for each question
 const {time: timeLeft, start: startQuestionTimer, reset: resetQuestionTimer, stop: stopQuestionTimer} = useTimer({
   initialTime: QUESTION_TIME_LIMIT,
   direction: 'down',
@@ -67,7 +66,7 @@ const {time: timeUntilStart, start: startCountdown} = useTimer({
 startCountdown();
 
 const handleAnswerClick = async (isCorrect: boolean) => {
-  if (isQuestionAnswered.value) return;
+  if (isQuestionAnswered.value) return; // Stop repeat clicks
   stopQuestionTimer();
 
   let playerResult: PlayerResult = {
@@ -77,6 +76,7 @@ const handleAnswerClick = async (isCorrect: boolean) => {
     timeAnswered: timeLeft.value
   };
   isQuestionAnswered.value = true;
+
   if (isCorrect) {
     playerResult.isCorrect = true;
   }
@@ -109,17 +109,10 @@ const nextQuestion = () => {
   }
 }
 
-const findOpponentName = (currentRoom: GameRoom): string => {
-  if (currentRoom.player1.id === id) {
-    return currentRoom.player2.name;
-  }
-  return currentRoom.player1.name;
-}
-
 onMounted(async () => {
   await nextTick();
 
-  opponentName.value = findOpponentName(room.value!);
+  opponentName.value = (room.value!.player1.id === id) ? room.value!.player2.name : room.value!.player1.name;
 
   const current = questions[currentQuestion.value];
   if (!current) return;

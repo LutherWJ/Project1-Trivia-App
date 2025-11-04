@@ -35,7 +35,6 @@ const io = new Server(httpServer, {
 });
 
 const engine = new Engine;
-
 io.bind(engine);
 
 app.get('/health', (req, res) => {
@@ -44,12 +43,13 @@ app.get('/health', (req, res) => {
 
 // Track which room each socket is in; key is playerID value is roomID.
 const socketRooms = new Map<string, string>();
-// Ensures we can call cleanup functions on disconnect; key is roomID
+// Ensures we can call cleanup functions on disconnect; key is roomID.
 const gameCleanup = new Map<string, () => void>;
 
 io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
 
+    // Put the user in queue and try to find them a match
     socket.on('findMatch', async (name: string) => {
         addPlayerToQueue(socket.id, name);
         const room = await makeRoom();
@@ -69,6 +69,7 @@ io.on('connection', (socket) => {
         io.to(room.player2.id).emit('matchFound');
     });
 
+    // Register that the user accepted the queue and
     socket.on('acceptMatch', () => {
         const roomID = socketRooms.get(socket.id);
         if (!roomID) {
@@ -96,6 +97,7 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', () => {
         console.log('Client disconnected:', socket.id);
+        // Lots of cleanup
         const roomID = socketRooms.get(socket.id);
         if (roomID) {
             const room = getRoom(roomID);

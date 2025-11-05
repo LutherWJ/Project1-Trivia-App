@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import { useSocket, disconnectSocket } from "../composables/useSocket.ts";
+import { useSocket } from "../composables/useSocket.ts";
 import { useRouter } from "vue-router";
 import { showError } from "../utils/errorHandler.ts";
 
@@ -54,7 +54,8 @@ onMounted(() => {
     on('matchStarted', (roomData) => {
       isAccepting.value = false;
       room.value = roomData;
-      router.push("/multiplayer");
+      // Small delay to ensure reactivity propagates before navigation
+      setTimeout(() => router.push("/multiplayer"), 50);
     }),
 
     on('matchCancelled', () => {
@@ -64,7 +65,7 @@ onMounted(() => {
     }),
 
     on('queueEntered', () => {
-      console.log('Entered matchmaking queue');
+      // Queue entered confirmation
     })
   );
 });
@@ -77,8 +78,7 @@ onUnmounted(() => {
     clearInterval(animationInterval);
   }
 
-  // Disconnect socket when leaving matchmaking to prevent event handler accumulation
-  disconnectSocket();
+  // Socket disconnect is handled by router navigation guard
 });
 
 const acceptMatch = () => {
@@ -91,7 +91,6 @@ const findMatch = () => {
     showError("Please enter your name");
     return;
   }
-  console.log("finding match", playerName.value);
   emit("findMatch", playerName.value.trim());
   isMatchmaking.value = true;
 }

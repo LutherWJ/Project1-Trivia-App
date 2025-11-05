@@ -13,20 +13,22 @@ import {useTimer} from "../composables/useTimer.ts";
 const router = useRouter()
 
 const {on, emit, room, id} = useSocket();
-if (room === undefined) {
-  showError("Error creating match");
+
+// Early return if room is not available
+if (room.value === null || room.value === undefined) {
+  showError("Error creating match - room data not found");
   router.push("/matchmaking");
 }
 
 const cleanupFunctions: (() => void)[] = [];
-const questions: Question[] = room.value!.questions
+const questions: Question[] = room.value?.questions || []
 const currentQuestion = ref<number>(0);
 const currentChoices = ref<AnswerChoice[]>([]);
 const questionCount = questions.length;
 const score = ref<number>(0);
 const isQuestionAnswered = ref<boolean>(false);
 const showWinner = ref<boolean>(false);
-const startTime = room.value?.startTime;
+const startTime = room.value.startTime;
 const isStarted = ref<boolean>(false); // Controls start timer for synchronized start
 let winHistory: Array<boolean> = []; // Track winner of each question
 const lastResult = ref<'win' | 'loss' | 'tie' | null>(null); // Track result of current question
@@ -160,6 +162,8 @@ onMounted(async () => {
 onUnmounted(() => {
   cleanupFunctions.forEach(cleanup => cleanup());
   cleanupFunctions.length = 0;
+
+  // Socket disconnect is handled by router navigation guard
 })
 
 </script>

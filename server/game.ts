@@ -1,13 +1,7 @@
-import type {GameRoom, PlayerResult, QuestionResult} from "./types/multiplayerTypes";
+import type {GameRoom, PlayerResult} from "./types/multiplayerTypes";
 import {Server, Socket} from "socket.io";
 import {MULTIPLAYER_QUESTION_COUNT} from "./constants";
 
-
-/*
-Where the game loop happens.
-Takes the game room and web socket server as parameters.
-returns cleanup functions in case of sudden disconnects to prevent memory leaks.
- */
 const startMatch = (room: GameRoom, io: Server) => {
     const playerResults = new Map<string, PlayerResult>();
     // Array that contains the ID of the winner for each question, null means tie.
@@ -33,7 +27,7 @@ const startMatch = (room: GameRoom, io: Server) => {
             playerResults.delete(room.player2.id);
 
             questionIdx++;
-            if (questionIdx > MULTIPLAYER_QUESTION_COUNT) {
+            if (questionIdx === MULTIPLAYER_QUESTION_COUNT) {
                 socket1?.off('answerQuestion', answerHandler);
                 socket2?.off('answerQuestion', answerHandler);
             }

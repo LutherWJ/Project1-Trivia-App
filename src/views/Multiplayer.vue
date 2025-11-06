@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {onMounted, ref, nextTick, onUnmounted} from 'vue'
 import {useRouter} from 'vue-router'
-import {type AnswerChoice, type Question} from '../types'
+import {type AnswerChoice, type Question, type QuestionResult} from '../types'
 import AnswerBox from "../components/AnswerBox.vue";
 import {showError} from "../utils/errorHandler";
 import {shuffleAnswers, decodeAnswerChoices, decodeHtml} from "../utils/quizHelpers";
@@ -28,10 +28,11 @@ const questionCount = questions.length;
 const score = ref<number>(0);
 const isQuestionAnswered = ref<boolean>(false);
 const showWinner = ref<boolean>(false);
-const startTime = room.value.startTime;
+const startTime = room.value!.startTime;
 const isStarted = ref<boolean>(false); // Controls start timer for synchronized start
 let winHistory: Array<boolean> = []; // Track winner of each question
 const lastResult = ref<'win' | 'loss' | 'tie' | null>(null); // Track result of current question
+const wasWonOffTime = ref<boolean>(false); // Track if result was decided by time
 const opponentName = ref<string>('');
 
 
@@ -127,10 +128,12 @@ onMounted(async () => {
   }
 
   cleanupFunctions.push(
-      on('resultDecided', (winnerID) => {
-        if (winnerID === null) {
+      on('resultDecided', (result: QuestionResult) => {
+        wasWonOffTime.value = result.isWonOffTime;
+
+        if (result.winResult === null) {
           lastResult.value = 'tie';
-        } else if (id === winnerID) {
+        } else if (id === result.winResult) {
           winHistory.push(true);
           score.value++;
           lastResult.value = 'win';
@@ -145,6 +148,7 @@ onMounted(async () => {
           isQuestionAnswered.value = false;
           showWinner.value = false;
           lastResult.value = null;
+          wasWonOffTime.value = false;
           nextQuestion();
         }, 1500);
       }), on('matchCancelled', (reason: string) => {
@@ -207,12 +211,28 @@ onUnmounted(() => {
       <p v-if="!isQuestionAnswered" class="text-center text-2xl md:text-3xl font-bold p-2 text-gray-400">
         Waiting For Answer
       </p>
-      <p v-else-if="showWinner && lastResult === 'win'" class="text-center text-2xl md:text-3xl font-bold p-2 text-green-500">
-        Your Point
-      </p>
-      <p v-else-if="showWinner && lastResult === 'loss'" class="text-center text-2xl md:text-3xl font-bold p-2 text-red-500">
-        {{opponentName}}'s Point
-      </p>
+      <div v-else-if="showWinner && lastResult === 'win'" class="text-center">
+        <p class="text-2xl md:text-3xl font-bold p-2 text-green-500">
+          Your Point
+        </p>
+        <p v-if="wasWonOffTime" class="text-sm md:text-base text-green-400">
+          Won by faster answer!
+        </p>
+        <p v-else class="text-sm md:text-base text-green-400">
+          Correct answer
+        </p>
+      </div>
+      <div v-else-if="showWinner && lastResult === 'loss'" class="text-center">
+        <p class="text-2xl md:text-3xl font-bold p-2 text-red-500">
+          {{opponentName}}'s Point
+        </p>
+        <p v-if="wasWonOffTime" class="text-sm md:text-base text-red-400">
+          Lost by slower answer
+        </p>
+        <p v-else class="text-sm md:text-base text-red-400">
+          Incorrect answer
+        </p>
+      </div>
       <p v-else-if="showWinner && lastResult === 'tie'" class="text-center text-2xl md:text-3xl font-bold p-2 text-yellow-500">
         Tie
       </p>

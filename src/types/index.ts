@@ -92,3 +92,8 @@ export interface PlayerResult {
     isCorrect: boolean;
     timeAnswered: number;
 }
+
+export interface QuestionResult {
+    winResult: string | null;
+    isWonOffTime: boolean;
+}

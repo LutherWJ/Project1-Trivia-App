@@ -32,17 +32,7 @@ export interface PlayerResult {
   timeAnswered: number;
 }
 
-// Socket.io event types
-export interface ServerToClientEvents {
-  'queueEntered': () => void;
-  'matchFound': () => void;
-  'matchStarted': (room: GameRoom) => void;
-  'matchCancelled': () => void;
-}
-
-export interface ClientToServerEvents {
-  'findMatch': (name: string) => void;
-  'acceptMatch': () => void;
-  'cancelMatch': () => void;
-  'answerQuestion': (result: PlayerResult) => Promise<boolean>; // Returns whether they get the point or not
+export interface QuestionResult {
+    winResult: string | null;
+    isWonOffTime: boolean;
 }

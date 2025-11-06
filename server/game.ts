@@ -1,6 +1,7 @@
-import type {GameRoom, PlayerResult} from "./types/multiplayerTypes";
+import type {GameRoom, PlayerResult, QuestionResult} from "./types/multiplayerTypes";
 import {Server, Socket} from "socket.io";
 import {MULTIPLAYER_QUESTION_COUNT} from "./constants";
+
 
 /*
 Where the game loop happens.
@@ -48,13 +49,30 @@ const startMatch = (room: GameRoom, io: Server) => {
     }
 }
 
-const decideWinner = (p1: PlayerResult, p2: PlayerResult) => {
-    if (!p1.isCorrect && !p2.isCorrect) return null;
-    if (p1.isCorrect && !p2.isCorrect) return p1.playerID;
-    if (!p1.isCorrect && p2.isCorrect) return p2.playerID;
-    if (p1.timeAnswered > p2.timeAnswered) return p1.playerID;
-    if (p1.timeAnswered < p2.timeAnswered) return p2.playerID;
-    return null; // Rare case where both players answered correct at the exact same millisecond
+const decideWinner = (p1: PlayerResult, p2: PlayerResult): QuestionResult => {
+    // Both incorrect - tie
+    if (!p1.isCorrect && !p2.isCorrect) {
+        return {winResult: null, isWonOffTime: false};
+    }
+
+    // Only one player correct
+    if (p1.isCorrect && !p2.isCorrect) {
+        return {winResult: p1.playerID, isWonOffTime: false};
+    }
+    if (!p1.isCorrect && p2.isCorrect) {
+        return {winResult: p2.playerID, isWonOffTime: false};
+    }
+
+    // Both correct - decide by time (higher timeAnswered means slower)
+    if (p1.timeAnswered > p2.timeAnswered) {
+        return {winResult: p2.playerID, isWonOffTime: true};
+    }
+    if (p1.timeAnswered < p2.timeAnswered) {
+        return {winResult: p1.playerID, isWonOffTime: true};
+    }
+
+    // Rare case where both answered correctly at the exact same millisecond
+    return {winResult: null, isWonOffTime: false};
 }
 
 export { startMatch };

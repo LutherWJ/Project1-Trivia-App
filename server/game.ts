@@ -1,4 +1,4 @@
-import type {GameRoom, PlayerResult, QuestionResult} from "./types/multiplayerTypes";
+import type {GameRoom, PlayerResult} from "./types/multiplayerTypes";
 import {Server, Socket} from "socket.io";
 import {MULTIPLAYER_QUESTION_COUNT} from "./constants";
 

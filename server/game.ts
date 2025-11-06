@@ -1,11 +1,11 @@
-import type {GameRoom, PlayerResult} from "./types/multiplayerTypes";
+import type {GameRoom, PlayerResult, QuestionResult} from "./types/multiplayerTypes";
 import {Server, Socket} from "socket.io";
 import {MULTIPLAYER_QUESTION_COUNT} from "./constants";
 
 const startMatch = (room: GameRoom, io: Server) => {
     const playerResults = new Map<string, PlayerResult>();
     // Array that contains the ID of the winner for each question, null means tie.
-    let scoreHistory: Array<string | null> = [];
+    let scoreHistory: Array<QuestionResult> = [];
     let questionIdx = 1;
     const socket1 = io.sockets.sockets.get(room.player1.id);
     const socket2 = io.sockets.sockets.get(room.player2.id);

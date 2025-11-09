@@ -8,8 +8,6 @@ import {showError} from "../utils/errorHandler";
 import {shuffleAnswers, decodeAnswerChoices, decodeHtml} from "../utils/quizHelpers";
 
 const router = useRouter()
-
-// Questions will be passed via route state because I need to justify adding vue router as a dependency
 const questions: TriviaAPIResponse = history.state.questions || { response_code: 0, results: [] };
 const currentQuestion = ref(0);
 const currentChoices = ref<AnswerChoice[]>([]);

@@ -1,7 +1,7 @@
 import type {AnswerChoice, Question, Result} from "../types";
 import {err, ok} from "../types";
 
-// Refactor notes: Too many side effects in these functions made them hard to reuse and track changes
+// Refactor notes: Too many side effects in these functions caused them to be too hard to reuse and understand.
 // From now on I'm taking a more functional approach to keep my head clear.
 
 export const shuffleAnswers = (question: Question): Result<AnswerChoice[], Error> => {

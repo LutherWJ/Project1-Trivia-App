@@ -1,6 +1,7 @@
 import type {GameRoom, PlayerResult} from "./types/multiplayerTypes";
 import {Server, Socket} from "socket.io";
 import {MULTIPLAYER_QUESTION_COUNT} from "./constants";
+import {QuestionResult} from "../src/types";
 
 const startMatch = (room: GameRoom, io: Server) => {
     const playerResults = new Map<string, PlayerResult>();

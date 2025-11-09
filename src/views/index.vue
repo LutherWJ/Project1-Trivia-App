@@ -68,6 +68,12 @@ const startMultiplayer = async () => {
   await router.push('/matchmaking');
 }
 
+
+const startAI = async () => {
+  isLoading.value = true;
+  await router.push('/ai');
+}
+
 onMounted(async () => {
   // Check for saved preferences in sessionStorage
   const p = getPreferences();
@@ -134,6 +140,12 @@ onBeforeRouteLeave(() => {
             class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors cursor-pointer active:bg-purple-800 text-lg"
         >
           Play Multiplayer
+        </button>
+        <button
+            @click="startAI"
+            class="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors cursor-pointer active:bg-purple-800 text-lg"
+        >
+          Play AI mode
         </button>
       </div>
 

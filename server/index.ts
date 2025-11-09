@@ -14,6 +14,8 @@ import cors from 'cors';
 import path from 'path';
 import {fileURLToPath} from 'url';
 import {startMatch} from "./game";
+import { generateQuestions, validateQuestions } from './ai/generation'
+import {AI_QUESTION_COUNT} from "./constants";
 
 const app = express();
 const httpServer = createServer(app);
@@ -113,6 +115,34 @@ io.on('connection', (socket) => {
 
         removePlayerFromQueue(socket.id);
     });
+});
+
+// API endpoint for the AI feature
+app.post('/api/ai/generate/:topic', async (req, res) => {
+    const topic = decodeURIComponent(req.params.topic);
+    console.log(`Generating Questions for topic: ${topic}`);
+
+    if (!topic) {
+        console.error('Topic is required for generation')
+        res.json({ success: false, error: 'No topic provided'})
+        return;
+    }
+
+    const questions = await generateQuestions(topic, AI_QUESTION_COUNT);
+    if (!questions.ok) {
+        res.json({ success: false, error: `Failed to fetch questions: ${questions.value}`})
+        return;
+    }
+
+    const valid = validateQuestions(questions.value, AI_QUESTION_COUNT);
+    if (!valid) {
+        console.error(`AI hallucination, incorrect JSON response: ${JSON.stringify(questions.value)}`);
+        res.json({ success: false, error: `AI hallucination, incorrect JSON response: ${JSON.stringify(questions.value)}`})
+        return;
+    }
+
+    console.log(`All done: ${JSON.stringify(questions.value)}`);
+    res.json({ success: true, questions: questions.value});
 });
 
 // Serve static Vue build in production

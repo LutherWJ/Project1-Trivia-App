@@ -5,6 +5,7 @@ import Endless from '../views/Endless.vue'
 import Matchmaking from "../views/Matchmaking.vue";
 import Multiplayer from "../views/Multiplayer.vue";
 import { useSocket, disconnectSocket } from '../composables/useSocket';
+import AI from "../views/AI.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,7 +34,12 @@ const router = createRouter({
       path: '/multiplayer',
       name: 'multiplayer',
       component: Multiplayer
-    }
+    },
+      {
+          path: '/ai',
+          name: 'ai',
+          component: AI
+      }
   ]
 })
 

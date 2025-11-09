@@ -58,6 +58,8 @@ export const Mode = {
     classic: 'Classic',
     special: 'Special',
     endless: 'Endless',
+    multiplayer: 'Multiplayer',
+    ai: 'AI'
 } as const
 
 export type Mode = typeof Mode[keyof typeof Mode]

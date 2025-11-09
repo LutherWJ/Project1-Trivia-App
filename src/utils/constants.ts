@@ -33,3 +33,4 @@ export const DIFFICULTIES = ["Any", "Easy", "Medium", "Hard"] as const;
 export const QUANTITIES = ["1", "3", "5", "7", "10", "15", "20"] as const;
 
 export const QUESTION_TIME_LIMIT = 10;
+export const SERVER_ADDRESS = "http://localhost:3000";
